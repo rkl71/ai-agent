@@ -1,6 +1,7 @@
 package com.hanyang.aiagent.advisor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.client.advisor.api.AdvisedRequest;
@@ -29,7 +30,9 @@ public class MyLoggerAdvisor implements CallAroundAdvisor, StreamAroundAdvisor {
     }
 
     private AdvisedRequest before(AdvisedRequest request) {
-        log.info("AI Request: {}", request.userText());
+        String renderRequest = new PromptTemplate(request.userText(), request.userParams()).render();
+        log.info("AI Request: {}", renderRequest);
+//        log.info("AI Request: {}", request);
         return request;
     }
 
