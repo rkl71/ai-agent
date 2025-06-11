@@ -8,6 +8,12 @@ spring:
       base-url: http://localhost:11434
       chat:
         model: gemma3:1b
+#    vectorstore:
+#      pgvector:
+#        index-type: HNSW
+#        dimensions: 1536
+#        distance-type: COSINE_DISTANCE
+#        max-document-batch-size: 1000 # Optional: Maximum number of documents per batch
 server:
   port: 8123
   servlet:
