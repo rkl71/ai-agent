@@ -12,20 +12,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ToolRegistration {
 
-    @Value("${search-api.api-key}")
-    private String searchApiKey;
+//    @Value("${search-api.api-key}")
+//    private String searchApiKey;
+        @Value("${search-api.serp-api-key}")
+        private String serpApiKey;
 
     @Bean
     public ToolCallback[] allTools() {
         FileOperationTool fileOperationTool = new FileOperationTool();
-        WebSearchTool webSearchTool = new WebSearchTool(searchApiKey);
+//        WebSearchTool webSearchTool = new WebSearchTool(searchApiKey);
+        GoogleWebSearchTool googleWebSearchTool = new GoogleWebSearchTool(serpApiKey);
         WebScrapingTool webScrapingTool = new WebScrapingTool();
         ResourceDownloadTool resourceDownloadTool = new ResourceDownloadTool();
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         PDFGenerationTool pdfGenerationTool = new PDFGenerationTool();
+
         return ToolCallbacks.from(
                 fileOperationTool,
-                webSearchTool,
+//                webSearchTool,
+                googleWebSearchTool,
                 webScrapingTool,
                 resourceDownloadTool,
                 terminalOperationTool,
