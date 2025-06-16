@@ -8,6 +8,16 @@ spring:
       base-url: http://localhost:11434
       chat:
         model: gemma3:1b
+    mcp:
+      client:
+        sse:
+          connections:
+            server1:
+              url: http://localhost:8127
+#        enabled: false
+#        stdio:
+#          servers-configuration: classpath:mcp-servers.json
+
 #    vectorstore:
 #      pgvector:
 #        index-type: HNSW
