@@ -40,7 +40,8 @@ class LoveAppTest {
     @Test
     void doChatWithRag() {
         String chatId = UUID.randomUUID().toString();
-        String message = "我已经结婚了，但是婚后关系不太亲密，怎么办？";
+//        String message = "我已经结婚了，但是婚后关系不太亲密，怎么办？";
+        String message = "普通感冒和胆管癌的临床症状有哪些区别？";
         String answer = loveApp.doChatWithRag(message, chatId);
         Assertions.assertNotNull(answer);
     }

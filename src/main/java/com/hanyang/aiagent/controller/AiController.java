@@ -1,6 +1,7 @@
 package com.hanyang.aiagent.controller;
 
 import com.hanyang.aiagent.agent.Manus;
+import com.hanyang.aiagent.app.DoctorApp;
 import com.hanyang.aiagent.app.LoveApp;
 import jakarta.annotation.Resource;
 import org.springframework.ai.chat.model.ChatModel;
@@ -21,6 +22,9 @@ public class AiController {
 
     @Resource
     private LoveApp loveApp;
+
+    @Resource
+    private DoctorApp doctorApp;
 
     @Resource
     private ToolCallback[] allTools;
@@ -50,6 +54,18 @@ public class AiController {
     @GetMapping(value = "/love_app/chat/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> doChatWithLoveAppSSE(String message, String chatId) {
         return loveApp.doChatByStream(message, chatId);
+    }
+
+    /**
+     * [新增] SSE 流式调用 AI 华佗问诊
+     *
+     * @param message
+     * @param chatId
+     * @return
+     */
+    @GetMapping(value = "/doctor/chat/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> doChatWithDoctorSSE(String message, String chatId) {
+        return doctorApp.doChatByStream(message, chatId);
     }
 
     /**
@@ -102,5 +118,4 @@ public class AiController {
         Manus manus = new Manus(allTools, dashscopeChatModel);
         return manus.runStream(message);
     }
-
 }

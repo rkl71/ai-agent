@@ -11,10 +11,11 @@
             <AiAvatarFallback :type="aiType" />
           </div>
           <div class="message-bubble">
-            <div class="message-content">
-              {{ msg.content }}
-              <span v-if="connectionStatus === 'connecting' && index === messages.length - 1" class="typing-indicator">▋</span>
-            </div>
+<!--            <div class="message-content">-->
+<!--              {{ msg.content }}-->
+<!--              <span v-if="connectionStatus === 'connecting' && index === messages.length - 1" class="typing-indicator">▋</span>-->
+<!--            </div>-->
+            <div class="message-content" v-html="parseMarkdown(msg.content)"></div>
             <div class="message-time">{{ formatTime(msg.time) }}</div>
           </div>
         </div>
@@ -55,7 +56,8 @@
 <script setup>
 import { ref, reactive, onMounted, nextTick, watch, computed } from 'vue'
 import AiAvatarFallback from './AiAvatarFallback.vue'
-import ThemeToggle from './ThemeToggle.vue'; // 1. 导入开关组件
+// 导入 marked 库
+import { marked } from 'marked';
 
 const props = defineProps({
   messages: {
@@ -80,9 +82,30 @@ const messagesContainer = ref(null)
 // 根据AI类型选择不同头像
 const aiAvatar = computed(() => {
   return props.aiType === 'doctor'
-    ? '/ai-doctor-avatar.png'  // 恋爱大师头像
+    ? '/ai-doctor-avatar.png'  // AI医生头像
     : '/ai-super-avatar.png' // 超级智能体头像
 })
+
+// 新增一个函数，用于将Markdown字符串解析为HTML
+const parseMarkdown = (content) => {
+  // 确保内容不为空，否则 marked 可能会报错
+  if (!content) {
+    // 如果是正在输入的最后一条消息，显示打字指示器
+    if (props.connectionStatus === 'connecting') {
+      return '<span class="typing-indicator">▋</span>';
+    }
+    return '';
+  }
+  // --- 核心修改点 开始 ---
+  let correctedContent = content
+      // 1. 修正列表格式
+      .replace(/^(\s*(\d+\.|[-*+]))([^\s\n])/gm, '$1 $3')
+      // 2. 新增：修正标题格式 (在'#'和文本间添加空格)
+      .replace(/^(#+)([^\s#\n])/gm, '$1 $2');
+  // --- 核心修改点 结束 ---
+
+  return marked.parse(correctedContent);
+};
 
 // 发送消息
 const sendMessage = () => {
@@ -221,10 +244,65 @@ onMounted(() => {
   text-align: left;
 }
 
-.message-content {
-  font-size: 16px;
-  line-height: 1.5;
-  white-space: pre-wrap;
+/* --- 【修改点】 --- */
+/* 为 v-html 渲染的元素优化样式 (美化版本) */
+.message-content :deep(h1),
+.message-content :deep(h2),
+.message-content :deep(h3),
+.message-content :deep(h4),
+.message-content :deep(h5),
+.message-content :deep(h6) {
+  margin-top: 16px;    /* 标题上方留出更多空间 */
+  margin-bottom: 8px;   /* 标题和下方内容之间的距离 */
+  font-weight: 600;     /* 字体加粗 */
+  line-height: 1.4;
+  border-bottom: 1px solid #e0e0e0; /* 添加一条下划线作为分隔，更清晰 */
+  padding-bottom: 4px; /* 下划线和文字之间的距离 */
+}
+
+/* 为不同级别的标题设置不同的大小 */
+.message-content :deep(h3) {
+  font-size: 1.1em; /* em 单位相对于父元素字体大小，更灵活 */
+}
+
+.message-content :deep(h4) {
+  font-size: 1.05em;
+  border-bottom: none; /* 级别较低的标题可以不要下划线，显得更轻量 */
+}
+
+/* 修正：如果标题是消息的第一个元素，则不需要上外边距 */
+.message-content :deep(> h1:first-child),
+.message-content :deep(> h2:first-child),
+.message-content :deep(> h3:first-child),
+.message-content :deep(> h4:first-child) {
+  margin-top: 0;
+}
+
+.message-content :deep(p) {
+  /* 段落之间保留一个较小的间距，但行内高度正常 */
+  line-height: 1.6;
+  margin: 0 0 6px 0;
+}
+.message-content :deep(p:last-child) {
+  /* 最后一个段落不需要下边距 */
+  margin-bottom: 0;
+}
+.message-content :deep(strong) {
+  font-weight: 600;
+}
+.message-content :deep(ul), .message-content :deep(ol) {
+  /* 列表本身不应有外边距，内边距(padding-left)用于项目符号的缩进 */
+  margin: 0;
+  padding-left: 22px;
+}
+.message-content :deep(li) {
+  /* 关键：显著减小列表项之间的垂直距离，让列表更紧凑 */
+  margin-bottom: 4px;
+  padding-left: 2px; /* 为项目符号和文本之间增加一点呼吸空间 */
+}
+/* 如果列表项内部还嵌套了<p>标签，则取消<p>的边距，完全由<li>控制间距 */
+.message-content :deep(li p) {
+  margin: 0;
 }
 
 .message-time {
