@@ -5,18 +5,18 @@
       <h1 class="title">华佗问诊</h1>
       <div class="chat-id">会话ID: {{ chatId }}</div>
     </div>
-    
+
     <div class="content-wrapper">
       <div class="chat-area">
-        <ChatRoom 
-          :messages="messages" 
+        <ChatRoom
+          :messages="messages"
           :connection-status="connectionStatus"
           ai-type="doctor"
           @send-message="sendMessage"
         />
       </div>
     </div>
-    
+
     <div class="footer-container">
       <AppFooter />
     </div>
@@ -29,7 +29,8 @@ import { useRouter } from 'vue-router'
 import { useHead } from '@vueuse/head'
 import ChatRoom from '../components/ChatRoom.vue'
 import AppFooter from '../components/AppFooter.vue'
-import {chatWithDoctor} from '../api'
+// import { chatWithLoveApp } from '../api'
+import { chatWithDoctor } from '../api'
 
 // 设置页面标题和元数据
 useHead({
@@ -69,16 +70,16 @@ const addMessage = (content, isUser) => {
 // 发送消息
 const sendMessage = (message) => {
   addMessage(message, true)
-  
+
   // 连接SSE
   if (eventSource) {
     eventSource.close()
   }
-  
+
   // 创建一个空的AI回复消息
   const aiMessageIndex = messages.value.length
   addMessage('', false)
-  
+
   connectionStatus.value = 'connecting'
   // eventSource = chatWithLoveApp(message, chatId.value)
   eventSource = chatWithDoctor(message, chatId.value)
@@ -92,13 +93,13 @@ const sendMessage = (message) => {
         messages.value[aiMessageIndex].content += data
       }
     }
-    
+
     if (data === '[DONE]') {
       connectionStatus.value = 'disconnected'
       eventSource.close()
     }
   }
-  
+
   // 监听SSE错误
   eventSource.onerror = (error) => {
     console.error('SSE Error:', error)
@@ -116,7 +117,7 @@ const goBack = () => {
 onMounted(() => {
   // 生成聊天ID
   chatId.value = generateChatId()
-  
+
   // 添加欢迎消息
   addMessage('欢迎来到华佗问诊，请详细描述您的症状，我将尽力为您提供参考建议。', false)
 })

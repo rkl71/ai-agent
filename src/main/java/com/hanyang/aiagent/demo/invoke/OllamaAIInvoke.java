@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * Spring AI 框架调用 AI 大模型
  */
-@Component
+//@Component
 public class OllamaAIInvoke implements CommandLineRunner {
 
     @Resource

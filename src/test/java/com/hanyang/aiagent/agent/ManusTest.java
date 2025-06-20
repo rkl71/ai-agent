@@ -17,6 +17,7 @@ class ManusTest {
                 我的另一半居住在上海静安区，请帮我找到 5 公里内合适的约会地点，
                 并结合一些网络图片，制定一份详细的约会计划，
                 并以 PDF 格式输出""";
+//        我的另一半居住在杭州市西湖区，最近发烧疑似阳了，帮我找到5公里以内合适的医院，并结合一些网络图片，制定一份详细的就诊计划，并以PDF格式输出
         String answer = manus.run(userPrompt);
         Assertions.assertNotNull(answer);
     }
