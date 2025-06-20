@@ -122,7 +122,13 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>font-asian</artifactId>
             <version>9.1.0</version>
-            <scope>test</scope>
+<!--            <scope>test</scope>-->
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/html2pdf -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>html2pdf</artifactId>
+            <version>6.1.0</version>
         </dependency>
 
         <dependency>

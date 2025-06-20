@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 // 根据环境变量设置 API 基础 URL
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
- ? '/api' // 生产环境使用相对路径，适用于前后端部署在同一域名下
- : 'http://localhost:8123/api' // 开发环境指向本地后端服务
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+    ? '/api' // 生产环境使用相对路径，适用于前后端部署在同一域名下
+    : 'http://localhost:8123/api' // 开发环境指向本地后端服务
 
 // 创建axios实例
 const request = axios.create({
@@ -15,17 +15,17 @@ const request = axios.create({
 export const connectSSE = (url, params, onMessage, onError) => {
   // 构建带参数的URL
   const queryString = Object.keys(params)
-    .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-    .join('&')
-  
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+      .join('&')
+
   const fullUrl = `${API_BASE_URL}${url}?${queryString}`
-  
+
   // 创建EventSource
   const eventSource = new EventSource(fullUrl)
-  
+
   eventSource.onmessage = event => {
     let data = event.data
-    
+
     // 检查是否是特殊标记
     if (data === '[DONE]') {
       if (onMessage) onMessage('[DONE]')
@@ -34,12 +34,12 @@ export const connectSSE = (url, params, onMessage, onError) => {
       if (onMessage) onMessage(data)
     }
   }
-  
+
   eventSource.onerror = error => {
     if (onError) onError(error)
     eventSource.close()
   }
-  
+
   // 返回eventSource实例，以便后续可以关闭连接
   return eventSource
 }
@@ -49,18 +49,12 @@ export const chatWithDoctor = (message, chatId) => {
   return connectSSE('/ai/doctor/chat/sse', { message, chatId });
 };
 
-// AI恋爱大师聊天
-// export const chatWithLoveApp = (message, chatId) => {
-//   return connectSSE('/ai/love_app/chat/sse', { message, chatId })
-// }
-
-// AI超级智能体聊天
+// AI超级智能体聊天（Manus）
 export const chatWithManus = (message) => {
   return connectSSE('/ai/manus/chat', { message })
 }
 
 export default {
   chatWithDoctor,
-  // chatWithLoveApp,
   chatWithManus
-} 
+}
